@@ -11,7 +11,7 @@ import lcddriver
 import time
 
 #####################################################
-#shutdown
+#shutdownGPIO4 LEDgpio18
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP)

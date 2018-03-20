@@ -12,8 +12,10 @@ import time
 
 #####################################################
 #shutdown
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+GPIO.setup(18,GPIO.OUT)
 
 #List Initial Time
 starttime = time.time()
@@ -75,6 +77,8 @@ while True:
 
 	while True:
 
+		GPIO.output(18,GPIO.HIGH)
+
 	        values  = [0]*4
 		values2 = [1]*4
 
@@ -103,6 +107,9 @@ while True:
 		file.write("{0:>6}".format(vsoilph))
 		file.write("\n")
 		file.flush()
+
+		GPIO.output(18,GPIO.LOW)
+
 
 		time.sleep(5.0 - ((time.time() - starttime) % 5.0))
 

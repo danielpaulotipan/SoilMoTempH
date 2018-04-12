@@ -1,5 +1,5 @@
 DLSU EARTH Air Monitoring (DEAMo)
-
+gas.py not gas2
 Arduino Mega:
 
 Gas Sensors/ Temperature and Humidity Sensors/ Dust Particle Sensor

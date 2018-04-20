@@ -11,7 +11,7 @@ import lcddriver
 import time
 
 #####################################################
-#shutdownGPIO4 LEDgpio18
+#shutdown
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP)
@@ -35,8 +35,13 @@ adc = Adafruit_ADS1x15.ADS1115()
 GAIN = 2/3
 
 #File
-filename = "/home/pi/soil_data/soil " + "({:%Y-%m-%d %H:%M:%S})".format(datetime.datetime.now()) + ".txt"
-file = open(filename, "w")
+filename1 = "/home/pi/soil_data/soil " + "({:%Y-%m-%d %H:%M:%S})".format(datetime.datetime.now()) + ".txt"
+
+file1 = open(filename1, "w")
+
+filename2 = "/media/pi/soil1/soildata.txt"
+
+file2 = open(filename2, "a")
 
 ######################################################
 #Define temperature Sensor
@@ -79,34 +84,47 @@ while True:
 
 		GPIO.output(18,GPIO.HIGH)
 
-	        values  = [0]*4
-		values2 = [1]*4
+		try:
 
-	        values[0] = adc.read_adc(0, gain=GAIN)
-	        vmoist = (values[0] * 0.1875)/ 1000
-		vmoist = 100 - ((vmoist / 4.8) * 100)
-		vmoistperc = str(round((vmoist), 2))
+		        values  = [0]*4
+			values2 = [1]*4
 
-		offset2 = 0.3
-		values2[1] = adc.read_adc(1, gain=GAIN)
-		vsoilp = ((values2[1] * 0.1875) / 1000)*3.5
-		vsoilph = str(round((vsoilp - offset2),2))
+	        	values[0] = adc.read_adc(0, gain=GAIN)
+		        vmoist = (values[0] * 0.1875)/ 1000
+			vmoist = 100 - ((vmoist / 4.8) * 100)
+			vmoistperc = str(round((vmoist), 2))
 
-		print '######################################'
-		print 'Soil Temperature: %s ' % read_temp()
-		print 'Soil Moisture: %s '% vmoistperc
-		print 'Soil ph: {0:>6}'.format(vsoilph)
+			offset2 = 0.5
+			values2[1] = adc.read_adc(1, gain=GAIN)
+			vsoilp = ((values2[1] * 0.1875) / 1000)*3.5
+			vsoilph = str(round((vsoilp + offset2),2))
 
-		display.lcd_display_string("EARTHlab Soil Sensor" , 1)
-		display.lcd_display_string("Soil  pH : {0:>6}".format(vsoilph), 2)
-		display.lcd_display_string("Moisture : %s %%" % vmoistperc, 3)
-		display.lcd_display_string("Temp degC: %s" % read_temp(), 4)
 
-		file.write("Time Temp Moist pH,{:%Y-%m-%d %H:%M:%S}," .format(datetime.datetime.now()))
-		file.write("%s," % read_temp() + "%s," % vmoistperc)
-		file.write("{0:>6}".format(vsoilph))
-		file.write("\n")
-		file.flush()
+			print '######################################'
+			print 'Soil Temperature: %s ' % read_temp()
+			print 'Soil Moisture: %s '% vmoistperc
+			print 'Soil ph: {0:>6}'.format(vsoilph)
+
+			display.lcd_display_string("EARTHlab Soil Sensor" , 1)
+			display.lcd_display_string("Soil  pH : {0:>6}".format(vsoilph), 2)
+			display.lcd_display_string("Moisture : %s %%" % vmoistperc, 3)
+			display.lcd_display_string("Temp degC: %s" % read_temp(), 4)
+
+			file1.write("Time.Temp.Moist.pH,{:%Y-%m-%d %H:%M:%S}," .format(datetime.datetime.now()))
+			file1.write("%s," % read_temp() + "%s," % vmoistperc)
+			file1.write("{0:>6}".format(vsoilph))
+			file1.write("\n")
+			file1.flush()
+
+			file2.write("Time.Temp.Moist.pH,{:%Y-%m-%d %H:%M:%S}," .format(datetime.datetime.now()))
+                        file2.write("%s," % read_temp() + "%s," % vmoistperc)
+                        file2.write("{0:>6}".format(vsoilph))
+                        file2.write("\n")
+                        file2.flush()
+
+		except IOError:
+			pass
+
 
 		GPIO.output(18,GPIO.LOW)
 

@@ -18,14 +18,20 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.cleanup()
 
-# Serial port parameters Arduino
+# Serial port parameters Arduino Mega
 serial_speed = 9600
 serial_port = '/dev/ttyACM0'
 ser = serial.Serial(serial_port, serial_speed)
 ser.flushInput()
 
+# Serial port parameters Arduino Uno
+serial_speed2 = 9600
+serial_port2 ='/dev/ttyUSB0'
+ser2 = serial.Serial(serial_port2, serial_speed2)
+ser2.flush
+
 #Filename
-filename = "/home/pi/gas_data/AQMS(" + "{:%H:%M %Y-%m-%d})".format(datetime.datetime.now()) + ".txt"
+filename = "/home/pi/Desktop/AQMS(" + "{:%H_%M %Y_%m_%d})".format(datetime.datetime.now()) + ".txt"
 file = open(filename, "w")
 
 air=g3.g3sensor()
@@ -40,6 +46,10 @@ class Application(Frame):
 		time.sleep(.1)
 		data = ser.readline()
 
+		ser2.write("m")
+		time.sleep(.1)
+		data2 = ser2.readline()
+
 		try:
 			pmdata=air.read("/dev/ttyAMA0") #pms3003
 		except:
@@ -50,20 +60,43 @@ class Application(Frame):
 			data = data.strip('\r\n')
 			processed_data = data.split(",")
 
+			data2 = data2.strip('\r\n')
+			processed_data2 = data2.split(",")
+
 			x = pmdata[3]
 			y = pmdata[5]
 			z = pmdata[4]
+
+			try:
+#				print(str(processed_data))
+				file.write("{:%Y_%m_%d %H_%M_%S},".format(datetime.datetime.now()))
+				file.write(str(x) + "," + str(y) + "," + str(z) + ",")
+				file.write(str(processed_data[0]) + ","
+				 + str(processed_data[1]) + ","
+				 + str(processed_data[2]) + ","
+				 + str(processed_data[3]) + ","
+				 + str(processed_data[4]) + ","
+				 + str(processed_data2[0]) + ","
+				 + str(processed_data2[1])
+                         	 )
+
+				file.write("\r\n")
+				file.flush()
+
+			except(IndexError, ValueError):
+				data = "null"
 
 			self.time_data.set("Time: {:%H:%M} ".format(datetime.datetime.now()))
 			self.date_data.set("Date: {:%Y-%m-%d} ".format(datetime.datetime.now()))
 
 			self.temp_data.set("Temp: " + str(processed_data[0] + " degC"))
 			self.hum_data.set("Humidity: " + str(processed_data[1] + " %"))
-			self.so2_data.set("SO2: " + str(processed_data[2] + " ppm"))
-			self.co_data.set("CO: " + str(processed_data[3] + " ppm"))
-			self.no2_data.set("NO2: " + str(processed_data[4] +" ppm"))
-			self.o3_data.set("O3: " + str(processed_data[5] + " ppm"))
-			self.co2_data.set("CO2: " + str(processed_data[6] + " ppm"))
+			self.no2_data.set("NO2: " + str(processed_data[2] +" ppm"))
+			self.o3_data.set("O3: " + str(processed_data[3] + " ppm"))
+			self.co2_data.set("CO2: " + str(processed_data[4] + " ppm"))
+
+			self.so2_data.set("SO2: " + str(processed_data2[0] + " ppm"))
+			self.co_data.set("CO: " + str(processed_data2[1] + " ppm"))
 
 			self.pm1_data.set ("PM1: "   + str(x) + " ug/m3")
 			self.pm25_data.set("PM2.5: " + str(y) + " ug/m3")
@@ -77,23 +110,7 @@ class Application(Frame):
 
 ############################################################## FILEWRITE ##################################################################
 
-		try:
-#			print(str(processed_data))
-			file.write("Ti.P1.25.10.Te.Hu.SO2.CO.NO2.O3.CO2,{:%Y-%m-%d %H:%M:%S},".format(datetime.datetime.now()))
-			file.write(str(x) + "," + str(y) + "," + str(z) + ",")
-			file.write(str(processed_data[0]) + ","
-				 + str(processed_data[1]) + ","
-				 + str(processed_data[2]) + ","
-				 + str(processed_data[3]) + ","
-				 + str(processed_data[4]) + ","
-				 + str(processed_data[5]) + ","
-				 + str(processed_data[6])
-                         	 )
-			file.write("\r\n")
-			file.flush()
 
-		except(IndexError, ValueError):
-			data = "null"
 
 ############################ Create display elements ######################################################################################
 	def createWidgets(self):
@@ -116,7 +133,7 @@ class Application(Frame):
 
 ############################################################### FRAME1
 
-		self.pm = Label(self.Frame1, width=25, height=2, text="Particulate Matter", bg="gray7", fg="bisque", font=('Verdana', 20, 'italic'))
+		self.pm = Label(self.Frame1, width=21, height=2, text="Particulate Matter", bg="gray7", fg="bisque", font=('Verdana', 20, 'italic'))
 		self.pm.grid(pady=2)
 		self.pm1 = Label(self.Frame1, textvariable=self.pm1_data, bg="gray7", fg="antique white", font=('Verdana', 20, 'bold'))
 		self.pm1_data.set("PM1")
@@ -130,7 +147,7 @@ class Application(Frame):
 
 ################################################################ FRAME2
 
-		self.temperature = Label(self.Frame2, width=25, textvariable=self.temp_data, bg="gray15", fg="red", font=('Verdana', 20, 'bold'))
+		self.temperature = Label(self.Frame2, width=21, textvariable=self.temp_data, bg="gray15", fg="red", font=('Verdana', 20, 'bold'))
 		self.temp_data.set("Temperature")
 		self.temperature.grid(pady=2)
 		self.humidity = Label(self.Frame2, textvariable=self.hum_data, bg="gray15", fg="SteelBlue3", font=('Verdana', 20, 'bold'))

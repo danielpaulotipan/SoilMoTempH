@@ -127,8 +127,8 @@ class Application(Frame):
 				f.write(curr_time + " - " + req_result + "\n")
 				f.close()
 				
-			except(IndexError, ValueError):
-				data = "null"
+			except:
+				pass
 
 			self.time_data.set("Time: {:%H:%M} ".format(datetime.datetime.now()))
 			self.date_data.set("Date: {:%Y-%m-%d} ".format(datetime.datetime.now()))

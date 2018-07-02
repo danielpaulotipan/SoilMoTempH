@@ -83,7 +83,7 @@ class Application(Frame):
 
 			try:
 #				print(str(processed_data))
-				file.write("{:%Y_%m_%d %H_%M_%S},".format(datetime.datetime.now()))
+				file.write("{:%Y-%m-%d %H:%M:%S},".format(datetime.datetime.now()))
 				file.write(str(x) + "," + str(y) + "," + str(z) + ",")
 				file.write(str(processed_data[0]) + ","
 				 + str(processed_data[1]) + ","

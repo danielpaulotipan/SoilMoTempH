@@ -40,10 +40,10 @@ file = open(filename, "w")
 file.write("Time,PM1,PM2.5,PM10,Temp,Hum,NO2,O3,CO2,SO2,CO")
 
 # Webserver
-SERVER_URL = "http://weather.pogznet.com/"
-API_ENDPOINT = "data_add?"
-SEID = "10"
-SKEY = "7hderal2"
+SERVER_URL = "http://weather.pogznet.com/index.php"
+API_ENDPOINT = "/API/data_add?"
+SEID = ""
+SKEY = ""
 BASE_URL = SERVER_URL+API_ENDPOINT \
 	+ "seid=" + SEID \
 	+ "&skey=" + SKEY
@@ -76,7 +76,7 @@ class Application(Frame):
 			mega_data = mega_data.strip('\r\n')
 			mega_processed_data = mega_data.split(",")
 
-			# Get arduino una data
+			# Get arduino uno data
 #			uno_data = uno_data.strip('\r\n')
 #			uno_processed_data = uno_data.split(",")
 

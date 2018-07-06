@@ -37,7 +37,7 @@ auno_ser.flush
 #Filename
 filename = "/home/pi/Desktop/AQMS(" + "{:%H:%M %m-%d-%Y})".format(datetime.datetime.now()) + ".txt"
 file = open(filename, "w")
-file.write("Time,PM1,PM2.5,PM10,Temp,Hum,NO2,O3,CO2,SO2,CO")
+file.write("Time,PM1,PM2.5,PM10,Temp,Hum,NO2,O3,CO2,SO2,CO\n")
 
 #Proxy Handler
 #proxy = 'http://proxy.dlsu.edu.ph:80'

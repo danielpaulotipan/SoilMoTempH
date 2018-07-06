@@ -8,7 +8,7 @@ import tkFont as tkfont
 import ttk
 import os
 import glob
-#import g3
+import g3
 import sys
 import RPi.GPIO as GPIO
 import pycurl
@@ -20,7 +20,7 @@ debug=1
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.cleanup()
-#air=g3.g3sensor()
+air=g3.g3sensor()
 
 # Serial port parameters Arduino Mega
 mega_serial_speed = 9600
@@ -29,15 +29,23 @@ mega_ser = serial.Serial(mega_serial_port, mega_serial_speed)
 mega_ser.flushInput()
 
 # Serial port parameters Arduino Uno
-#auno_serial_speed = 9600
-#auno_serial_port = '/dev/ttyUSB0'
-#auno_ser = serial.Serial(auno_serial_port, auno_serial_speed)
-#auno_ser.flush
+auno_serial_speed = 9600
+auno_serial_port = '/dev/ttyUSB0'
+auno_ser = serial.Serial(auno_serial_port, auno_serial_speed)
+auno_ser.flush
 
 #Filename
 filename = "/home/pi/Desktop/AQMS(" + "{:%H:%M %m-%d-%Y})".format(datetime.datetime.now()) + ".txt"
 file = open(filename, "w")
 file.write("Time,PM1,PM2.5,PM10,Temp,Hum,NO2,O3,CO2,SO2,CO")
+
+#Proxy Handler
+#proxy = 'http://proxy.dlsu.edu.ph:80'
+
+#os.environ['http_proxy'] = proxy 
+#os.environ['HTTP_PROXY'] = proxy
+#os.environ['https_proxy'] = proxy
+#os.environ['HTTPS_PROXY'] = proxy
 
 # Webserver
 SERVER_URL = "http://weather.pogznet.com/index.php"
@@ -55,19 +63,19 @@ class Application(Frame):
 	def measure(self):
 
 		# Request data from pm3003
-#		try:
-#			pmdata=air.read("/dev/ttyAMA0") #pms3003
-#		except:
-#			pmdata=[0,0,0,0,0,0]
+		try:
+			pmdata=air.read("/dev/ttyAMA0") #pms3003
+		except:
+			pmdata=[0,0,0,0,0,0]
 
 		# Request data and read the answer of 2 arduino
 		mega_ser.write("m")
 		time.sleep(.1)
 		mega_data = mega_ser.readline()
 
-#		auno_ser.write("m")
-#		time.sleep(.1)
-#		auno_data = auno_ser.readline()
+		auno_ser.write("m")
+		time.sleep(.1)
+		auno_data = auno_ser.readline()
 
 
 		# If the answer is not empty, process & display data
@@ -77,23 +85,20 @@ class Application(Frame):
 			mega_processed_data = mega_data.split(",")
 
 			# Get arduino uno data
-#			uno_data = uno_data.strip('\r\n')
-#			uno_processed_data = uno_data.split(",")
+			auno_data = auno_data.strip('\r\n')
+			auno_processed_data = auno_data.split(",")
 
 			# Initialize data
-#			pm01 = str(pmdata[3])
-#			pm25 = str(pmdata[5])
-#			pm10 = str(pmdata[4])
-			pm01 = str(mega_processed_data[0])
-			pm25 = str(mega_processed_data[1])
-			pm10 = str(mega_processed_data[2])
-			temp = str(mega_processed_data[3])
-			humi = str(mega_processed_data[4])
-			no2x = str(mega_processed_data[5])
-			o3xx = str(mega_processed_data[6])
-			co2x = str(mega_processed_data[7])
-			so2x = str(mega_processed_data[8])
-			coxx = str(mega_processed_data[9])
+			pm01 = str(pmdata[3])
+			pm25 = str(pmdata[5])
+			pm10 = str(pmdata[4])
+			temp = str(mega_processed_data[0])
+			humi = str(mega_processed_data[1])
+			no2x = str(mega_processed_data[2])
+			o3xx = str(mega_processed_data[3])
+			co2x = str(mega_processed_data[4])
+			so2x = str(auno_processed_data[0])
+			coxx = str(auno_processed_data[1])
 
 			# Save to a text file
 			file.write("{:%Y-%m-%d %H:%M:%S},".format(datetime.datetime.now()))
@@ -116,7 +121,7 @@ class Application(Frame):
 				VAL_time = str(int(time.time()))
 				HTTP_REQUEST = BASE_URL	+ "&time=" + VAL_time \
 					+ "&pm01=" + pm01 \
-					+ "&pm25="+ pm25 \
+					+ "&pm25=" + pm25 \
 					+ "&pm10=" + pm10 \
 					+ "&temp=" + temp \
 					+ "&humi=" + humi \
@@ -154,7 +159,7 @@ class Application(Frame):
 			self.pm25_data.set("PM2.5: " + pm25 + " ug/m3")
 			self.pm10_data.set( "PM10: " + pm10 + " ug/m3")
 
-		except:
+		except(IndexError, ValueError):
 			pass
 
         	# Wait 1 second between each measurement

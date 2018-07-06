@@ -1,5 +1,5 @@
 #!/bin/sh
-sudo python /home/pi/gas.py
+sudo python /home/pi/gaswnet.py
 
 # Open terminal
 # Type sudo nano /home/pi/launcher.sh

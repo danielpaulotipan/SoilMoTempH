@@ -41,7 +41,10 @@ file.write('\n')
 
 #Define temperature Sensor
 def Shutdown(channel):
-	os.system("sudo cp -a /home/pi/soil_data/. /media/pi/usb1")
+	try:
+		os.system("sudo cp -a /home/pi/soil_data/. /media/pi/usb1")
+	except:
+		pass
 	display.lcd_display_string("Good Bye!!!         ", 1)
 	display.lcd_display_string("EARTHlab DLSU Manila", 2)
 	display.lcd_display_string("{:%Y-%m-%d %H:%M:%S}  ".format(datetime.datetime.now()), 3)
@@ -76,8 +79,7 @@ while True:
 	now = datetime.datetime.now()
 	time.sleep(60 - now.second - now.microsecond / 1e6)	
 	
-	
-	while GPIO.add_event_detect(4, GPIO.FALLING, callback = Shutdown, bouncetime = 2000) == False:
+	while True:
 
 		GPIO.output(18,GPIO.HIGH)
 
@@ -94,7 +96,7 @@ while True:
 			vmoistperc = str(vmoistper)
 		elif vmoistperc <= 0:
 			vmoistperc = 0
-			vmoistperc = str(vmoistperc)
+				vmoistperc = str(vmoistperc)
 		else:
 			vmoistperc = str(vmoistperc)
 

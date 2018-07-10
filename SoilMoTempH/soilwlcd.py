@@ -41,6 +41,7 @@ file.write('\n')
 
 #Define temperature Sensor
 def Shutdown(channel):
+	GPIO.add_event_detect(4, GPIO.FALLING, callback = Shutdown, bouncetime = 2000)
 	os.system("sudo cp -a /home/pi/soil_data/. /media/pi/usb1")
 	display.lcd_display_string("Good Bye!!!         ", 1)
 	display.lcd_display_string("EARTHlab DLSU Manila", 2)
@@ -71,13 +72,13 @@ def read_temp():
 
 ######################################################u
 #Print
-GPIO.add_event_detect(4, GPIO.FALLING, callback = Shutdown, bouncetime = 2000)
 
 while True:
 	now = datetime.datetime.now()
-	time.sleep(60 - now.second - now.microsecond / 1e6)
-
-	while (Shutdown == True):
+	time.sleep(60 - now.second - now.microsecond / 1e6)	
+	GPIO.add_event_detect(4, GPIO.FALLING, callback = Shutdown, bouncetime = 2000)
+	
+	while GPIO.input(4) == True:
 
 		GPIO.output(18,GPIO.HIGH)
 

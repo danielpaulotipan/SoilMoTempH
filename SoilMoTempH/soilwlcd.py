@@ -87,8 +87,7 @@ while True:
 	        values[0] = adc.read_adc(0, gain=GAIN)
 	        vmoi = (values[0] * 0.1875)/ 1000
 		vmois = 100 - ((vmoi / 4.8) * 100)
-		vmoist = vmois - 3
-		vmoistperc = int(round((vmoist), 2))
+		vmoistperc = float(round((vmois), 2))
 
 		if vmoistperc >= 100:
 			vmoistperc = 100
@@ -104,7 +103,7 @@ while True:
 		vsoilp = ((values2[1] * 0.1875) / 1000)*3.5
 		vsoilph = str(round((vsoilp - offset2),2))
 
-		display.lcd_display_string("EARTHlab Soil Sensor", 1)
+		display.lcd_display_string("{:%H:%M %m-%d-%Y}".format(datetime.datetime.now()), 1)
 		display.lcd_display_string("Soil  pH : {0:>6}".format(vsoilph), 2)
 		display.lcd_display_string("Moisture : %s %%" % vmoistperc, 3)
 		display.lcd_display_string("Temp degC: %s" % read_temp(), 4)
@@ -118,5 +117,3 @@ while True:
 		GPIO.output(18,GPIO.LOW)
 
 		time.sleep(5.0 - ((time.time() - starttime) % 5.0))
-
-
